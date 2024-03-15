@@ -96,8 +96,8 @@ Defaults to one hour."
                (pmtime (org-roam-timestamps--get-mtime pnode))
                (ppos (buffer-end -1)))
           (org-roam-timestamps--add-mtime pnode pmtime)
-          (unless (org-roam-timestamps--get-ctime ppos)
-            (org-entry-put ppos "ctime" ctime-filename))))
+          ;; (unless (org-roam-timestamps--get-ctime ppos)
+            (org-entry-put ppos "ctime" ctime-filename)))
       nil)))
 
 (defun org-roam-timestamps--add-mtime (node &optional mtime)
