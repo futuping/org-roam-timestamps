@@ -95,9 +95,9 @@ Defaults to one hour."
         (let* ((pnode (org-roam-timestamps--get-parent-file-node file))
                (pmtime (org-roam-timestamps--get-mtime pnode))
                (ppos (buffer-end -1)))
-          (org-roam-timestamps--add-mtime pnode pmtime)
           ;; (unless (org-roam-timestamps--get-ctime ppos)
-            (org-entry-put ppos "ctime" ctime-filename)))
+            (org-entry-put ppos "CTIME" ctime-filename)
+            (org-roam-timestamps--add-mtime pnode pmtime)))
       nil)))
 
 (defun org-roam-timestamps--add-mtime (node &optional mtime)
@@ -110,18 +110,18 @@ if you supply the current MTIME."
          (curr (format-time-string "%Y%m%d_%H%M%S.%3N%z" (current-time))))
      (if (and org-roam-timestamps-remember-timestamps mtime)
          (when (> (org-roam-timestamps-subtract curr mtime t) org-roam-timestamps-minimum-gap)
-           (org-entry-put pos "mtime" (concat (org-roam-timestamps-decode (current-time)) " " mtime)))
-       (org-entry-put pos "mtime" curr)))))
+           (org-entry-put pos "MTIME" (concat (org-roam-timestamps-decode (current-time)) " " mtime)))
+       (org-entry-put pos "MTIME" curr)))))
 
 (defun org-roam-timestamps--get-mtime (node)
   "Get the mtime of the org-roam node NODE."
   (org-with-wide-buffer
-   (org-entry-get (if node (org-roam-node-point node) (point-min)) "mtime")))
+   (org-entry-get (if node (org-roam-node-point node) (point-min)) "MTIME")))
 
 (defun org-roam-timestamps--get-ctime (pos)
   "Return the current ctime for the node at point POS."
   (org-with-wide-buffer
-   (org-entry-get pos "ctime")))
+   (org-entry-get pos "CTIME")))
 
 (defun org-roam-timestamps--add-ctime (node)
   "Return the current ctime for the node NODE.
@@ -140,8 +140,8 @@ ctime."
             (filename (file-name-base file))
             (index (string-match "^[0-9]\\{14\\}" filename))
             (timestamp (substring filename index (+ index 14))))
-           (org-entry-put pos "ctime" timestamp)
-         (org-entry-put pos "ctime" (car(last (split-string (org-entry-get pos "mtime"))))))))))
+           (org-entry-put pos "CTIME" timestamp)
+         (org-entry-put pos "CTIME" (car(last (split-string (org-entry-get pos "MTIME"))))))))))
 
 (defun org-roam-timestamps--get-parent-file-id (file)
   "Find the top level node-id of FILE."
@@ -206,13 +206,13 @@ This might take a second. Are you sure you want to continue?")
           (org-roam-with-file file nil
             (goto-char pos)
             (unless (assoc-default "MTIME" props)
-              (org-roam-property-add "mtime" mtime ))
+              (org-roam-property-add "MTIME" mtime ))
             (unless (assoc-default "CTIME" props)
               (if-let ((filename (file-name-base file))
                        (index (string-match "^[0-9]\\{14\\}" filename))
                        (timestamp (substring filename index (+ index 14))))
-                  (org-roam-property-add "ctime" timestamp)
-                (org-roam-property-add "ctime" mtime)))
+                  (org-roam-property-add "CTIME" timestamp)
+                (org-roam-property-add "CTIME" mtime)))
             (save-buffer))))))
   (org-roam-db-sync))
 
@@ -229,7 +229,7 @@ This might take a second. Are you sure you want to continue?")
           (org-with-wide-buffer
           (if-let ((mtime (org-roam-timestamps--get-mtime n))
                    (split (split-string mtime)))
-                (org-entry-put pos "mtime"  (car split))
+                (org-entry-put pos "MTIME"  (car split))
                 (save-buffer)))))))
   (org-roam-timestamps-mode 1))
 
