@@ -81,6 +81,8 @@ Defaults to one hour."
   (when (org-roam-buffer-p)
     (let* ((node (org-roam-node-at-point))
            (file (org-roam-node-file node))
+           (filename (file-name-base file))
+           (ctime-filename (replace-regexp-in-string "page-" "" filename))
            (pos (org-roam-node-point node))
            (level (org-roam-node-level node))
            (mtime (org-roam-timestamps--get-mtime node)))
@@ -88,13 +90,15 @@ Defaults to one hour."
       (org-roam-timestamps--add-mtime node mtime)
       (unless (org-roam-timestamps--get-ctime pos)
         (org-roam-timestamps--add-ctime node))
+
       (when (and org-roam-timestamps-timestamp-parent-file (not (eq level 0)))
         (let* ((pnode (org-roam-timestamps--get-parent-file-node file))
                (pmtime (org-roam-timestamps--get-mtime pnode))
                (ppos (buffer-end -1)))
           (org-roam-timestamps--add-mtime pnode pmtime)
           (unless (org-roam-timestamps--get-ctime ppos)
-            (org-roam-timestamps--add-ctime pnode))))
+            (org-entry-put ppos "ctime" ctime-filename))))
+
       nil)))
 
 (defun org-roam-timestamps--add-mtime (node &optional mtime)
