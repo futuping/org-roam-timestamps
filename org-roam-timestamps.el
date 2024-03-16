@@ -95,9 +95,9 @@ Defaults to one hour."
         (let* ((pnode (org-roam-timestamps--get-parent-file-node file))
                (pmtime (org-roam-timestamps--get-mtime pnode))
                (ppos (buffer-end -1)))
+          (org-roam-timestamps--add-mtime pnode pmtime)
           ;; (unless (org-roam-timestamps--get-ctime ppos)
-            (org-entry-put ppos "CTIME" ctime-filename)
-            (org-roam-timestamps--add-mtime pnode pmtime)))
+          (org-entry-put ppos "CTIME" ctime-filename)))
       nil)))
 
 (defun org-roam-timestamps--add-mtime (node &optional mtime)
@@ -227,10 +227,10 @@ This might take a second. Are you sure you want to continue?")
              (pos (org-roam-node-point n)))
         (org-roam-with-file file nil
           (org-with-wide-buffer
-          (if-let ((mtime (org-roam-timestamps--get-mtime n))
-                   (split (split-string mtime)))
-                (org-entry-put pos "MTIME"  (car split))
-                (save-buffer)))))))
+           (if-let ((mtime (org-roam-timestamps--get-mtime n))
+                    (split (split-string mtime)))
+               (org-entry-put pos "MTIME"  (car split))
+             (save-buffer)))))))
   (org-roam-timestamps-mode 1))
 
 (provide 'org-roam-timestamps)
