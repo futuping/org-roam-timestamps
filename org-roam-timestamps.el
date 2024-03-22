@@ -100,6 +100,9 @@ Defaults to one hour."
           (org-entry-put ppos "CTIME" ctime-filename)))
       nil)))
 
+(defvar org-roam-timestamps--on-save-hook nil
+  "Hook for `org-roam-timestamps--on-save'.")
+
 (defun org-roam-timestamps--add-mtime (node &optional mtime)
   "Add the current time to the node NODE.
 
